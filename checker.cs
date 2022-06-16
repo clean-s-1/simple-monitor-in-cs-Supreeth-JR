@@ -1,38 +1,28 @@
-using System;
-using System.Diagnostics;
-
-class Checker
+namespace Checker
 {
-    static bool batteryIsOk(float temperature, float soc, float chargeRate) {
-        if(temperature < 0 || temperature > 45) {
-            Console.WriteLine("Temperature is out of range!");
-            return false;
-        } else if(soc < 20 || soc > 80) {
-            Console.WriteLine("State of Charge is out of range!");
-            return false;
-        } else if(chargeRate > 0.8) {
-            Console.WriteLine("Charge Rate is out of range!");
-            return false;
-        }
-        return true;
-    }
+    class Checker
+    {
+        static int Main(string[] args)
+        {
+            IBatteryState batteryState = ChargingState.GetChargingState(typeof(ChargingBatteryState));
 
-    static void ExpectTrue(bool expression) {
-        if(!expression) {
-            Console.WriteLine("Expected true, but got false");
-            Environment.Exit(1);
+            bool isTempInRange = batteryState.CheckTemperature(32);
+            bool isChargingRateInRange = batteryState.CheckChargeRate(0.5f);
+            bool isStateOfChargeInRange = batteryState.CheckStateOfCharge(50);
+
+            TestUtilities.ExpectTrue(isTempInRange);
+            TestUtilities.ExpectTrue(isChargingRateInRange);
+            TestUtilities.ExpectTrue(isStateOfChargeInRange);
+
+            isTempInRange = batteryState.CheckTemperature(50);
+            isChargingRateInRange = batteryState.CheckChargeRate(1);
+            isStateOfChargeInRange = batteryState.CheckStateOfCharge(90);
+
+            TestUtilities.ExpectFalse(isTempInRange);
+            TestUtilities.ExpectFalse(isChargingRateInRange);
+            TestUtilities.ExpectFalse(isStateOfChargeInRange);
+
+            return 0;
         }
-    }
-    static void ExpectFalse(bool expression) {
-        if(expression) {
-            Console.WriteLine("Expected false, but got true");
-            Environment.Exit(1);
-        }
-    }
-    static int Main() {
-        ExpectTrue(batteryIsOk(25, 70, 0.7f));
-        ExpectFalse(batteryIsOk(50, 85, 0.0f));
-        Console.WriteLine("All ok");
-        return 0;
     }
 }
