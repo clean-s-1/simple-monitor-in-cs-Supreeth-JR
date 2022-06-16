@@ -10,7 +10,7 @@ namespace Checker
             {
                 Console.WriteLine("Expected true, but got false");
                 Environment.Exit(1);
-            }
+            } 
         }
         public static void ExpectFalse(bool expression)
         {
